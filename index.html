@@ -454,6 +454,139 @@ button:active{transform:scale(.965);filter:brightness(.88)}
  .topSetStats .weightStat{min-width:42px!important}
 }
 </style>
+
+<style>
+/* v2.5 — larger, readable, auto-fitting completed-card text */
+.completedTop .exname{
+  font-size:clamp(21px,5.4vw,27px)!important;
+  line-height:1.12!important;
+  max-width:57%!important;
+}
+.topSetStats{
+  max-width:42%!important;
+  min-width:0!important;
+}
+.topSetStats .summaryMain{
+  font-size:clamp(12px,3.1vw,16px)!important;
+  line-height:1.2!important;
+  white-space:normal!important;
+  text-wrap:balance;
+}
+.topSetStats .summaryBreakdown{
+  flex-wrap:wrap!important;
+  row-gap:5px!important;
+  column-gap:12px!important;
+}
+.topSetStats .weightStatLabel{
+  font-size:clamp(9px,2.25vw,11px)!important;
+}
+.topSetStats .weightStatValue{
+  font-size:clamp(14px,3.6vw,18px)!important;
+}
+.completeStatusLine{
+  font-size:clamp(11px,2.8vw,14px)!important;
+}
+.completeStatusLine span{
+  font-size:clamp(13px,3vw,16px)!important;
+}
+.completedExerciseSummary .exerciseEditControls button,
+.completedExerciseSummary .exerciseEditControls .btn{
+  font-size:clamp(14px,3.5vw,18px)!important;
+}
+@media(max-width:370px){
+  .completedTop .exname{font-size:20px!important;max-width:55%!important}
+  .topSetStats{max-width:44%!important}
+  .topSetStats .summaryMain{font-size:11.5px!important}
+  .topSetStats .weightStatValue{font-size:13px!important}
+}
+</style>
+
+<style>
+/* v2.6 — scale ALL completed-card text, especially grey exercise info */
+.completedTop{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(125px,42%)!important;
+  column-gap:clamp(16px,4vw,28px)!important;
+  align-items:center!important;
+  min-height:82px!important;
+}
+.completedTop .exname{
+  max-width:none!important;
+  font-size:clamp(22px,5.6vw,29px)!important;
+  line-height:1.12!important;
+}
+.topSetStats{
+  max-width:none!important;
+  width:100%!important;
+  text-align:right!important;
+}
+.topSetStats .summaryMain{
+  font-size:clamp(14px,3.7vw,19px)!important;
+  line-height:1.25!important;
+  font-weight:900!important;
+  color:#aeb7c1!important;
+  white-space:normal!important;
+  text-wrap:balance;
+}
+.topSetStats .summaryBreakdown{
+  margin-top:8px!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  flex-wrap:wrap!important;
+  gap:8px clamp(13px,3.2vw,22px)!important;
+}
+.topSetStats .weightStat{
+  min-width:0!important;
+  align-items:flex-end!important;
+}
+.topSetStats .weightStatLabel{
+  font-size:clamp(10px,2.6vw,13px)!important;
+  line-height:1.15!important;
+  color:#818c97!important;
+}
+.topSetStats .weightStatValue{
+  font-size:clamp(16px,4.2vw,21px)!important;
+  line-height:1.15!important;
+  color:#d8dfe5!important;
+}
+.completeStatusLine{
+  margin-top:12px!important;
+  padding-top:11px!important;
+  font-size:clamp(12px,3.1vw,15px)!important;
+}
+.completeStatusLine span{font-size:clamp(14px,3.5vw,18px)!important}
+
+/* Narrow cards: automatically give the info more room and scale it down slightly. */
+@media(max-width:390px){
+ .completedTop{
+   grid-template-columns:minmax(0,1fr) minmax(118px,44%)!important;
+   column-gap:14px!important;
+ }
+ .completedTop .exname{font-size:clamp(20px,5.3vw,25px)!important}
+ .topSetStats .summaryMain{font-size:clamp(13px,3.5vw,16px)!important}
+ .topSetStats .weightStatLabel{font-size:clamp(9px,2.4vw,11px)!important}
+ .topSetStats .weightStatValue{font-size:clamp(14px,3.8vw,18px)!important}
+}
+/* Very information-heavy summaries may wrap instead of becoming tiny. */
+@media(max-width:345px){
+ .completedTop{grid-template-columns:minmax(0,54%) minmax(0,46%)!important;column-gap:10px!important}
+ .topSetStats .summaryBreakdown{gap:6px 10px!important}
+}
+</style>
+
+<style>
+/* v2.7 — weekday stays fixed; workout title is editable */
+#dayTitle{display:flex;align-items:center;flex-wrap:wrap;gap:0}
+.editableWorkoutTitle{
+ appearance:none;border:0;background:transparent;padding:0;margin:0;
+ color:inherit;font:inherit;font-weight:inherit;letter-spacing:inherit;
+ cursor:pointer;text-align:left;
+ border-bottom:1px dashed rgba(139,234,91,.45);
+}
+.editableWorkoutTitle:after{content:"  ✎";font-size:.58em;color:#82df5c;opacity:.75;vertical-align:middle}
+.fixedDay{white-space:nowrap}
+.dayDash{white-space:pre}
+</style>
 </head><body>
 <script>
 /* v0.8 — Gym Hub styled dialogs */
@@ -969,7 +1102,19 @@ function collapsedExerciseSummary(x){
  return html;
 }
 
-function renderDay(){let d=getDay();document.getElementById("dayTitle").textContent=`${d.day} — ${d.name}`;let e=document.getElementById("exercises");e.innerHTML="";d.exercises.forEach((x,ei)=>{let c=document.createElement("div");c.className="exercise"+(x.done?" exercisecomplete":"");let sets=x.tallies.map((r,si)=>{let sd=r.every(Boolean);return sd
+
+function editWorkoutTitle(){
+ let d=getDay();
+ const next=prompt(`Edit ${d.day} workout title:`,d.name||"");
+ if(next===null)return;
+ const name=next.trim();
+ if(!name)return;
+ d.name=name;
+ save();
+ renderDay();
+}
+
+function renderDay(){let d=getDay();document.getElementById("dayTitle").innerHTML=`<span class="fixedDay">${d.day}</span><span class="dayDash"> — </span><button class="editableWorkoutTitle" onclick="editWorkoutTitle()"></button>`;document.querySelector(".editableWorkoutTitle").textContent=d.name;let e=document.getElementById("exercises");e.innerHTML="";d.exercises.forEach((x,ei)=>{let c=document.createElement("div");c.className="exercise"+(x.done?" exercisecomplete":"");let sets=x.tallies.map((r,si)=>{let sd=r.every(Boolean);return sd
  ? `<div class="set completedset compactdone" onclick="toggleSet(${ei},${si})"><div class="settop"><span>Set ${si+1} • ${setRepValue(ei,si)} reps</span><span class="setdone">${pendingAction===`${currentWeek}-${currentDay}-${ei}-${si}-undo`&&Date.now()<pendingUntil?"PRESS AGAIN TO UNDO":"✓ DONE"}</span></div>${setDetailsLine(ei,si)}</div>`
  : (()=>{let id=`${currentWeek}-${currentDay}-${ei}-${si}`,t=timers[id];if(!t)return `<div class="set"><div class="settop"><span>Set ${si+1} • ${setRepValue(ei,si)} reps</span></div>${setDetailsLine(ei,si)}<button class="setcheck" onclick="toggleSet(${ei},${si})">Finished Set — Start Rest</button></div>`;let elapsed=Math.floor((Date.now()-t.start)/1000),ready=elapsed>=180;return `<div class="set restingSet"><div class="settop"><span>Set ${si+1} • ${setRepValue(ei,si)} reps</span><span class="restbadge">${ready?"MIN REST ✓":"RESTING"}</span></div>${setDetailsLine(ei,si)}<div class="inlineTimer"><strong id="tm-${ei}-${si}">${Math.floor(elapsed/60)}:${String(elapsed%60).padStart(2,"0")}</strong><span>${ready?"Minimum 3:00 reached":"Build up to 3:00 minimum"}</span></div><div class="restActions three"><button class="resetRest" onclick="resetRest(${ei},${si})">${pendingRestAction===`${currentWeek}-${currentDay}-${ei}-${si}-reset`&&Date.now()<pendingRestUntil?"Reset again?":"↻ Reset"}</button><button class="skipRest" onclick="skipRest(${ei},${si})">${pendingRestAction===`${currentWeek}-${currentDay}-${ei}-${si}-skip`&&Date.now()<pendingRestUntil?"Skip again?":"Skip"}</button><button class="doneRest ${ready?"readyDone":""}" onclick="finishRestSet(${ei},${si})">${pendingRestAction===`${currentWeek}-${currentDay}-${ei}-${si}-done`&&Date.now()<pendingRestUntil?"Press again ✓":"✓ Done"}</button></div></div>`})()}).join("");
 if(x.done){
@@ -1262,7 +1407,7 @@ requestAnimationFrame(v2WeekNotDoneButtons);
       const line=document.createElement("div"); line.className="v01-brandline";
       h.parentNode.insertBefore(line,h);
       line.appendChild(h);
-      const v=document.createElement("span");v.className="v01-version";v.textContent="v2.4";
+      const v=document.createElement("span");v.className="v01-version";v.textContent="v2.7";
       line.appendChild(v);
     }
 
